@@ -5,6 +5,18 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Menu, X, Phone } from "lucide-react"
 
+// ============================================
+// НАЗВАНИЕ КОМПАНИИ - ЗАМЕНИТЕ НА СВОЁ
+// ============================================
+const COMPANY_NAME = "TerraDom"
+const COMPANY_LOGO_LETTER = "T"  // Первая буква для логотипа
+
+// ============================================
+// ТЕЛЕФОН - ЗАМЕНИТЕ НА СВОЙ
+// ============================================
+const PHONE_DISPLAY = "+7 (843) 200-00-00"  // Отображаемый формат
+const PHONE_LINK = "+78432000000"            // Для ссылки tel: (без пробелов)
+
 const navLinks = [
   { href: "#projects", label: "Проекты" },
   { href: "#advantages", label: "Преимущества" },
@@ -24,9 +36,9 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-lg">T</span>
+              <span className="text-primary-foreground font-bold text-lg">{COMPANY_LOGO_LETTER}</span>
             </div>
-            <span className="font-serif text-xl font-semibold text-foreground">TerraDom</span>
+            <span className="font-serif text-xl font-semibold text-foreground">{COMPANY_NAME}</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -45,11 +57,11 @@ export function Header() {
           {/* Phone & CTA */}
           <div className="hidden lg:flex items-center gap-4">
             <a
-              href="tel:+78432000000"
+              href={`tel:${PHONE_LINK}`}
               className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition-colors"
             >
               <Phone className="w-4 h-4" />
-              +7 (843) 200-00-00
+              {PHONE_DISPLAY}
             </a>
             <Button asChild>
               <Link href="#contact">Оставить заявку</Link>
@@ -82,11 +94,11 @@ export function Header() {
               </Link>
             ))}
             <a
-              href="tel:+78432000000"
+              href={`tel:${PHONE_LINK}`}
               className="flex items-center gap-2 text-base font-medium text-foreground py-2"
             >
               <Phone className="w-5 h-5" />
-              +7 (843) 200-00-00
+              {PHONE_DISPLAY}
             </a>
             <Button asChild className="w-full mt-2">
               <Link href="#contact" onClick={() => setIsMenuOpen(false)}>

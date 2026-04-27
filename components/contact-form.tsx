@@ -1,51 +1,76 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
+import emailjs from "@emailjs/browser"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Phone, Mail, MapPin, Clock, CheckCircle2 } from "lucide-react"
+import { Phone, Mail, MapPin, Clock, CheckCircle2, AlertCircle } from "lucide-react"
 
+// ============================================
+// НАСТРОЙКА EMAILJS - ЗАМЕНИТЕ ЗНАЧЕНИЯ НИЖЕ
+// ============================================
+const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID"    // Замените на ваш Service ID из EmailJS
+const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID"  // Замените на ваш Template ID из EmailJS  
+const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY"    // Замените на ваш Public Key из EmailJS
+
+// ============================================
+// КОНТАКТНАЯ ИНФОРМАЦИЯ - ЗАМЕНИТЕ НА СВОЮ
+// ============================================
 const contactInfo = [
   {
     icon: Phone,
     label: "Телефон",
-    value: "+7 (843) 200-00-00",
-    href: "tel:+78432000000",
+    value: "+7 (843) 200-00-00",      // Замените на ваш телефон
+    href: "tel:+78432000000",          // Замените на ваш телефон (без пробелов)
   },
   {
     icon: Mail,
     label: "Email",
-    value: "info@terradom.ru",
-    href: "mailto:info@terradom.ru",
+    value: "info@terradom.ru",         // Замените на ваш email
+    href: "mailto:info@terradom.ru",   // Замените на ваш email
   },
   {
     icon: MapPin,
     label: "Офис",
-    value: "г. Казань, ул. Баумана, 1",
+    value: "г. Казань, ул. Баумана, 1", // Замените на ваш адрес
     href: "#",
   },
   {
     icon: Clock,
     label: "Режим работы",
-    value: "Пн-Сб: 9:00 - 19:00",
+    value: "Пн-Сб: 9:00 - 19:00",       // Замените на ваше время работы
     href: null,
   },
 ]
 
 export function ContactForm() {
+  const formRef = useRef<HTMLFormElement>(null)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    
-    setIsLoading(false)
-    setIsSubmitted(true)
+    setError(null)
+
+    if (!formRef.current) return
+
+    try {
+      await emailjs.sendForm(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        formRef.current,
+        EMAILJS_PUBLIC_KEY
+      )
+      setIsSubmitted(true)
+    } catch (err) {
+      console.error("EmailJS Error:", err)
+      setError("Произошла ошибка при отправке. Попробуйте позже или свяжитесь с нами по телефону.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -102,7 +127,7 @@ export function ContactForm() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
                     Ваше имя
@@ -156,6 +181,13 @@ export function ContactForm() {
                     className="resize-none"
                   />
                 </div>
+
+                {error && (
+                  <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm text-destructive">
+                    <AlertCircle className="w-4 h-4 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
 
                 <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
                   {isLoading ? "Отправка..." : "Отправить заявку"}
